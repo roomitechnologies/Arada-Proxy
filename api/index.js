@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 const cors = require('cors')
+require('dotenv').config();
 
 app.use(express.json());
 app.use(cors())
@@ -22,7 +23,7 @@ app.post('/api/proxy', async (req, res) => {
       },
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': 'eaTl42rhJLYkJ3zPnqoMaaBHpBTVgkwP', // Securely use environment variable
+        'x-api-key': process.env.ARADA_KEY, // Securely use environment variable
         'appname': 'roomi',
         'channelcode': 'RoomiBox'
       }
@@ -30,6 +31,7 @@ app.post('/api/proxy', async (req, res) => {
 
     res.status(apiResponse.status).send(apiResponse.data);
   } catch (error) {
+    console.log(error)
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
