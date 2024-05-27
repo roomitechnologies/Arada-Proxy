@@ -4,8 +4,8 @@ const app = express();
 const cors = require('cors')
 require('dotenv').config();
 
-app.use(express.json());
 app.use(cors())
+app.use(express.json());
 
 app.post('/api/proxy', async (req, res) => {
   try {
@@ -45,6 +45,29 @@ app.post('/api/proxy', async (req, res) => {
     }
   }
 });
+
+app.post('/api/logflare-roomiApp-proxy', async (req, res) => {
+  const { body } = req;
+  const url = `https://api.logflare.app/logs/json?source=${process.env.LOGFLARE_SOURCE_TOKEN}`;
+  try {
+    console.log(body)
+    const response = await axios.post(url, req.body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': process.env.LOGFLARE_API_KEY
+      }
+    });
+
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    console.error('Error in proxy server:', error);
+    res.status(error.response ? error.response.status : 500).json({
+      message: 'Error forwarding request to Logflare',
+      error: error.message
+    });
+  }
+})
+
 
 const port = 3000;
 app.listen(port, () => {
